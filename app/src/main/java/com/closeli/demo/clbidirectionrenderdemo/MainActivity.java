@@ -47,6 +47,14 @@ public class MainActivity extends CLDIParentAcvitity implements CLWebRtcNativeBi
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
 
+        //Camera 权限提前判断！！！
+        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            int result = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
+            if (result != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.CAMERA},1);
+            }
+        }
+
         CLWebRtcNativeBinder.setHallCallback(this);
         CLWebRtcNativeBinder.init(getApplicationContext());
 
@@ -99,6 +107,7 @@ public class MainActivity extends CLDIParentAcvitity implements CLWebRtcNativeBi
                 ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.CAMERA},1);
 
                 Toast.makeText(this, "没有相机权限！！！", Toast.LENGTH_SHORT).show();
+                mInvitation = null;
                 return;
             }
         }
