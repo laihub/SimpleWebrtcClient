@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.widget.Toast;
 
 import com.closeli.library.camera.tools.PixelBuffer;
 import com.closeli.natives.CLWebRtcNativeBinder;
@@ -31,7 +32,7 @@ public class CLBIVideoDemoRemoteActivity extends CLBIVideoDemoActivity implement
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        CLWebRtcNativeBinder.disConnect(mUser.peerId);
+        CLWebRtcNativeBinder.disConnectToPeer(mUser.peerId);
         CLWebRtcNativeBinder.setCallback(null);
     }
 
@@ -52,9 +53,15 @@ public class CLBIVideoDemoRemoteActivity extends CLBIVideoDemoActivity implement
         mCameraRender.onDataReture(ByteBuffer.wrap(pdata), width, height);
     }
 
+    @Override
+    public void onDisconnect(int peerId, int code) {
+        Toast.makeText(this, "连接结束！", Toast.LENGTH_SHORT).show();
+        finish();
+    }
+
 
     private void connect() {
-        int ret = CLWebRtcNativeBinder.connect(mUser.peerId);
+        int ret = CLWebRtcNativeBinder.connectToPeer(mUser.peerId);
         CLWebRtcNativeBinder.setCallback(this);
         if (ret < 0)
         {
