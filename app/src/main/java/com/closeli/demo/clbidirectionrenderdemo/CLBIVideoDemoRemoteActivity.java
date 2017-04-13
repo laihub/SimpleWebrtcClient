@@ -81,6 +81,7 @@ public class CLBIVideoDemoRemoteActivity extends CLBIVideoDemoActivity implement
                     finish();
                 }
             });
+            dialogBuilder.create().show();
         }
     }
 }

@@ -124,7 +124,7 @@ public class MainActivity extends CLDIParentAcvitity implements CLWebRtcNativeBi
     }
 
     @Override
-    public void onInvite(int peerId, String name) {
+    public void onInvite(final int peerId, final String name) {
 
         if (null != mInvitation) {
             return;
@@ -134,23 +134,30 @@ public class MainActivity extends CLDIParentAcvitity implements CLWebRtcNativeBi
         mInvitation.title = name;
         mInvitation.peerId = peerId;
 
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        dialogBuilder.setTitle("接收到 " + name +" : " + peerId + " 的邀请");
-        dialogBuilder.setMessage("是否要建立连接?");
-        dialogBuilder.setCancelable(false);
-        dialogBuilder.setPositiveButton("是", new DialogInterface.OnClickListener() {
+        runOnUiThread(new Runnable() {
             @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                startVideo(mInvitation);
+            public void run() {
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
+                dialogBuilder.setTitle("接收到 " + name +" : " + peerId + " 的邀请");
+                dialogBuilder.setMessage("是否要建立连接?");
+                dialogBuilder.setCancelable(false);
+                dialogBuilder.setPositiveButton("是", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        startVideo(mInvitation);
+                    }
+                });
+
+                dialogBuilder.setNegativeButton("否", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mInvitation = null;
+                    }
+                });
+                dialogBuilder.create().show();
             }
         });
 
-        dialogBuilder.setNegativeButton("否", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                mInvitation = null;
-            }
-        });
     }
 
     @Override
