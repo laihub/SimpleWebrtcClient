@@ -23,6 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 
@@ -47,13 +48,7 @@ public class MainActivity extends CLDIParentAcvitity implements CLWebRtcNativeBi
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
 
-        //Camera 权限提前判断！！！
-        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            int result = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.CAMERA},1);
-            }
-        }
+        needRequestPermission();
 
         CLWebRtcNativeBinder.setHallCallback(this);
         CLWebRtcNativeBinder.init(getApplicationContext());
@@ -100,16 +95,9 @@ public class MainActivity extends CLDIParentAcvitity implements CLWebRtcNativeBi
 
         CLLoger.trace(TAG, "startVideo with: " + data.title + " peerId: " + data.peerId);
 
-        //Camera 权限提前判断！！！
-        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            int result = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.CAMERA},1);
-
-                Toast.makeText(this, "没有相机权限！！！", Toast.LENGTH_SHORT).show();
-                mInvitation = null;
-                return;
-            }
+        if (needRequestPermission()) {
+            mInvitation = null;
+            return;
         }
 
         Intent intent;
@@ -203,6 +191,28 @@ public class MainActivity extends CLDIParentAcvitity implements CLWebRtcNativeBi
             CLLoger.trace(TAG, exp.toString());
         }
 
+    }
+
+
+    private boolean needRequestPermission() {
+        //Camera 权限提前判断！！！
+        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            List<String> permissions = new ArrayList<>();
+            int resultAudio = ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
+            int resultCamera = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
+            if (resultAudio != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.RECORD_AUDIO);
+            }
+            if (resultCamera != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.CAMERA);
+            }
+            if (permissions.size() > 0) {
+                ActivityCompat.requestPermissions(this, permissions.toArray(new String[permissions.size()]), 1);
+                return true;
+            }
+
+        }
+        return false;
     }
 
 }
