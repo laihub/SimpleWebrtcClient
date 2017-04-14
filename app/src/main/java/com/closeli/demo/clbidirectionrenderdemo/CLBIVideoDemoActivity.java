@@ -6,6 +6,7 @@ import android.hardware.Camera;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 import com.closeli.library.camera.render.CLCameraSurfaceViewRender;
@@ -191,14 +192,7 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
             float distanceY = moveYCurrent - moveYDown;
             double module = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
             if (MOVE_INTERVAL > module) {
-                view.queueEvent(new Runnable() {
-                    @Override
-                    public void run() {
-                        mCameraRender.setVerseEnable(!mCameraRender.isVersed());
-
-                        CLLoger.trace(TAG, "current versed: " + mCameraRender.isVersed());
-                    }
-                });
+                switchPage();
             }
             release = true;
         }
@@ -228,5 +222,24 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
 //                mIV.setImageBitmap(rgbaImage);
 //            }
 //        });
+    }
+
+    private void switchPage() {
+        mGLMainView.queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                mCameraRender.setVerseEnable(!mCameraRender.isVersed());
+                CLLoger.trace(TAG, "current versed: " + mCameraRender.isVersed());
+            }
+        });
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        if (KeyEvent.KEYCODE_DPAD_CENTER == keyCode) {
+            switchPage();
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }
