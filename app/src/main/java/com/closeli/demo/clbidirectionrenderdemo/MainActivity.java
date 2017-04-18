@@ -5,13 +5,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.Toast;
+import android.view.KeyEvent;
 
 import com.closeli.library.camera.tools.CLLoger;
 import com.closeli.natives.CLWebRtcNativeBinder;
@@ -181,7 +181,7 @@ public class MainActivity extends CLDIParentAcvitity implements CLWebRtcNativeBi
                     @Override
                     public void run() {
                         mDataSource.setDataSource(dataArray);
-                        mAdapter.notifyDataSetChanged();
+                        mAdapter.updateRecycleView();
                     }
                 });
             }
@@ -215,4 +215,9 @@ public class MainActivity extends CLDIParentAcvitity implements CLWebRtcNativeBi
         return false;
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        mAdapter.notifySelectedIndexForDirection(keyCode);
+        return super.onKeyDown(keyCode, event);
+    }
 }
