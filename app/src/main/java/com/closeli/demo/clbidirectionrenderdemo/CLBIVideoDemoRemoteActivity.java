@@ -2,6 +2,7 @@ package com.closeli.demo.clbidirectionrenderdemo;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
@@ -12,6 +13,7 @@ import com.closeli.remoteTools.CLNetworkData;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by piaovalentin on 2017/4/5.
@@ -40,7 +42,9 @@ public class CLBIVideoDemoRemoteActivity extends CLBIVideoDemoActivity implement
     protected void onReadData(PixelBuffer pixelBuffer, int width, int height) {
         super.onReadData(pixelBuffer, width, height);
 
-        CLWebRtcNativeBinder.sendVideoData(pixelBuffer.buffer.array(), width, height);
+        final long captureTimeNs = TimeUnit.MILLISECONDS.toNanos(SystemClock.elapsedRealtime());
+
+        CLWebRtcNativeBinder.sendVideoData(pixelBuffer.buffer.array(), width, height,captureTimeNs);
     }
 
     @Override
