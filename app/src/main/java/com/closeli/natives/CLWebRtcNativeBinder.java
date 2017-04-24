@@ -45,8 +45,9 @@ public class CLWebRtcNativeBinder {
      * @param data      视频数据 RGBA 格式
      * @param width     视频 宽
      * @param height    视频 高
+     *
      */
-    public static native void sendVideoData(byte[] data, int width, int height);
+    public static native void sendVideoData(byte[] data, int width, int height, long timeStamp);
 
 
     /**
