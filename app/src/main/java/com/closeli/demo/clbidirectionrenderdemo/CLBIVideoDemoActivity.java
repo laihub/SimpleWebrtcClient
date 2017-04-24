@@ -1,24 +1,29 @@
 package com.closeli.demo.clbidirectionrenderdemo;
 
-import android.graphics.Point;
+import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
+import android.view.TextureView;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 
-import com.closeli.library.camera.render.CLCameraSurfaceViewRender;
-import com.closeli.library.camera.render.CLResizeSurfaceView;
+import com.closeli.library.camera.textureRender.CLCameraRender;
+import com.closeli.library.camera.textureRender.CLSimpleRender;
+import com.closeli.library.camera.textureRender.CLTextureViewGLRenderCallback;
 import com.closeli.library.camera.tools.CLCameraManager;
 import com.closeli.library.camera.tools.CLLoger;
 import com.closeli.library.camera.tools.PixelBuffer;
 
-import java.nio.Buffer;
-
 import butterknife.BindView;
-import butterknife.OnTouch;
+import butterknife.OnClick;
 
 /**
  * Created by piaovalentin on 2017/3/31.
@@ -28,45 +33,56 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
 
     private final String TAG = getClass().getSimpleName();
 
-    @BindView(R.id.mainview)
-    CLResizeSurfaceView mGLMainView;
 
-    CLCameraSurfaceViewRender mCameraRender;
+    @BindView(R.id.localView)
+    TextureView mLocalView;
+
+    @BindView(R.id.remoteView)
+    TextureView mRemoteView;
+
+    @BindView(R.id.mainLayout)
+    RelativeLayout mMainLayout;
+
+    @BindView(R.id.funcLayout)
+    RelativeLayout mFuncLayout;
+
+
+    CLCameraRender mCameraRender;
+    CLSimpleRender mRemoteRender;
+
+    private byte[] previewBuffer;
+
+
+    private boolean isMicOff = false;
+    private boolean isSoundOff = false;
+    private boolean isFlowOnTop = true;
 
     @Override
     protected int contenViewLayout() {
+
+        //取消标题栏
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //取消状态栏
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         return R.layout.activity_bivideodemo;
     }
 
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
+
         setUpCamera();
-        int glVer = CLCameraSurfaceViewRender.supperMaxGLVersion(this);// select GLES 2.0
-        setUpMainView(glVer);
+        setUpLocalView();
+        setUpRemoteView();
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-        mGLMainView.onResume();
-        final Camera.Size previewSize = CLCameraManager.sharedCameraManager().getCameraPreviewSize();
-        mGLMainView.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                mCameraRender.setCameraPreviewSize(previewSize.width, previewSize.height);
-            }
-        });
-
-        Point size = new Point();
-        getWindowManager().getDefaultDisplay().getSize(size);
-        float x = CLCameraManager.sharedCameraManager().getVideoRatio(previewSize.width, previewSize.height) * size.y;
-        if(x >= size.x) {
-            mGLMainView.resize((int) x, size.y);
-        }else{
-            float y = size.x/CLCameraManager.sharedCameraManager().getVideoRatio(previewSize.width, previewSize.height);
-            mGLMainView.resize(size.x, (int)y);
-        }
+        mCameraRender.onResume();
+        mRemoteRender.onResume();
     }
 
     @Override
@@ -74,50 +90,24 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
         super.onPause();
 
         CLCameraManager.sharedCameraManager().closeCamera();
-        mGLMainView.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                mCameraRender.notifyPausing();
-            }
-        });
-        mGLMainView.onPause();
+        mCameraRender.onPause();
+        mRemoteRender.onPause();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mCameraRender.halt();
+        mRemoteRender.halt();
+    }
+
+
 
     private void setUpCamera() {
         try {
             CLCameraManager.init(this);
             CLCameraManager.sharedCameraManager().setSwapAble(true);
             CLCameraManager.sharedCameraManager().config(null);
-
-            CLCameraManager.sharedCameraManager().setCameraManagerCallback(new CLCameraManager.CLCameraManagerCallback() {
-                @Override
-                public int previewFacing() {
-                    return Camera.CameraInfo.CAMERA_FACING_FRONT;
-                }
-
-                @Override
-                public boolean needRsetConfigBeforePreview() {
-                    return false;
-                }
-
-                @Override
-                public void onCameraFrameAvailable(SurfaceTexture surfaceTexture) {
-                    mGLMainView.requestRender();
-                }
-
-                @Override
-                public void onCameraPreviewStartWithSize(final Camera.Size previewSize) {
-
-                    mGLMainView.queueEvent(new Runnable() {
-                        public void run() {
-                            if (null != mCameraRender && null != previewSize) {
-                                mCameraRender.setCameraPreviewSize(previewSize.width, previewSize.height);
-                            }
-                        }
-                    });
-                    CLLoger.trace(TAG, "start preview!!! :" + mCameraRender.isVersed());
-                }
-            });
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -126,88 +116,63 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
     }
 
 
-    private void setUpMainView(int glVer) {
+    private void setUpLocalView() {
 
-        mGLMainView.setEGLContextClientVersion(glVer);
-
-        mCameraRender = new CLCameraSurfaceViewRender(this, new CLCameraSurfaceViewRender.CLCameraSurfaceViewCallback() {
-
+        final Camera.Size previewSize = CLCameraManager.sharedCameraManager().getCameraPreviewSize();
+        mCameraRender = new CLCameraRender(this, previewSize, new CLTextureViewGLRenderCallback() {
             @Override
-            public void onSurfaceTextureCreated(SurfaceTexture texture) {
-                CLCameraManager.sharedCameraManager().setSurfaceTexture(texture);
-            }
+            public void onSurfaceTextureAvailable(SurfaceTexture st, int width, int height) {
+                try {
+                    Camera camera = CLCameraManager.sharedCameraManager().getCameraInstance();
+                    int bufferSize = previewSize.width * previewSize.height;
+                    int bits = (ImageFormat.getBitsPerPixel(camera.getParameters().getPreviewFormat()));
+                    bufferSize = Math.round(bufferSize * 1.f * bits / 8.f);
+                    previewBuffer = new byte[bufferSize];
+                    camera.addCallbackBuffer(previewBuffer);
+                    camera.setPreviewCallbackWithBuffer(new Camera.PreviewCallback() {
+                        @Override
+                        public void onPreviewFrame(byte[] data, Camera camera) {
+                            if (null == camera) {
+                                return;
+                            }
+                            camera.addCallbackBuffer(previewBuffer);
+                            onReadData(data, previewSize.width, previewSize.height);
+                        }
+                    });
 
-            @Override
-            public void onRenderPixelBuffer(PixelBuffer pixelBuffer, int width, int height) {
-                onReadData(pixelBuffer, width, height);
-                onDataReture(pixelBuffer.buffer, width, height);
+                    camera.setPreviewTexture(st);
+                    camera.startPreview();
+                }catch (Exception exp) {
+
+                    exp.printStackTrace();
+                    CLLoger.trace(TAG, "startPlaying error!");
+                }
             }
         });
-
-        mGLMainView.setRenderer(mCameraRender);
-        mGLMainView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        mCameraRender.start();
+        mLocalView.setSurfaceTextureListener(mCameraRender);
     }
 
+    private void setUpRemoteView() {
+        mRemoteRender = new CLSimpleRender(this, new CLTextureViewGLRenderCallback() {
+            @Override
+            public void onSurfaceTextureAvailable(SurfaceTexture st, int width, int height) {
 
-    protected void onReadData(PixelBuffer pixelBuffer, int width, int height) {
-        pixelBuffer.using = false;
-    }
-
-
-    protected void onDataReture(Buffer buffer, int width, int height) {
-        mCameraRender.onDataReture(buffer, width, height);
-    }
-
-
-    static float moveXDown, moveYDown;
-    static float moveXCurrent, moveYCurrent;
-    final int MOVE_INTERVAL = 10;
-    @OnTouch(R.id.mainview)
-    public boolean swap(GLSurfaceView view, MotionEvent event) {
-
-        int action = event.getAction();
-
-        moveXCurrent = event.getX();
-        moveYCurrent = event.getY();
-
-        boolean release = false;
-
-        if(MotionEvent.ACTION_DOWN == action) {
-            moveXDown = moveXCurrent;
-            moveYDown = moveYCurrent;
-        }
-        else if(MotionEvent.ACTION_MOVE == action) {
-
-            view.queueEvent(new Runnable() {
-                @Override
-                public void run() {
-                    mCameraRender.moveFlowView(moveXCurrent, moveYCurrent);
-                }
-            });
-
-        }
-        else if(MotionEvent.ACTION_UP == action) {
-
-            float distanceX = moveXCurrent - moveXDown;
-            float distanceY = moveYCurrent - moveYDown;
-            double module = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
-            if (MOVE_INTERVAL > module) {
-                switchPage();
             }
-            release = true;
-        }
-
-
-        if (release || action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_OUTSIDE){
-            view.queueEvent(new Runnable() {
-                @Override
-                public void run() {
-                    mCameraRender.moveFinished();
-                }
-            });
-        }
-        return true;
+        });
+        mRemoteRender.start();
+        mRemoteView.setSurfaceTextureListener(mRemoteRender);
     }
+
+
+    protected void onReadData(byte[] data, int width, int height) {
+
+//        byte[] rgba = new byte[width * height * 4];
+//        CLWebRtcNativeBinder.convertI420ToRGBA(data, width, height,rgba);
+//
+//        mRemoteRender.fillData(rgba, false, width, height);
+    }
+
 
 
     private void rgbaImageTest(PixelBuffer pixelBuffer, int width, int height) {
@@ -224,22 +189,65 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
 //        });
     }
 
-    private void switchPage() {
-        mGLMainView.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                mCameraRender.setVerseEnable(!mCameraRender.isVersed());
-                CLLoger.trace(TAG, "current versed: " + mCameraRender.isVersed());
-            }
-        });
-    }
+
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
-        if (KeyEvent.KEYCODE_DPAD_CENTER == keyCode) {
-            switchPage();
-        }
+//        if (KeyEvent.KEYCODE_DPAD_CENTER == keyCode) {
+//
+//        }
         return super.onKeyDown(keyCode, event);
     }
+
+
+
+    @OnClick(R.id.btn_switch)
+    public void switchPage() {
+
+        View flowView, mainView;
+        if (isFlowOnTop) {
+            flowView = mRemoteView;
+            mainView = mLocalView;
+        }
+        else {
+            flowView = mLocalView;
+            mainView = mRemoteView;
+        }
+        isFlowOnTop = false;
+
+        int mainLeft = mainView.getLeft();
+        int mainRight = mainView.getRight();
+        int mainTop = mainView.getTop();
+        int mainBottom = mainView.getBottom();
+
+        int flowLeft = flowView.getLeft();
+        int flowRight = flowView.getRight();
+        int flowTop = flowView.getTop();
+        int flowBottom = flowView.getBottom();
+
+        flowView.layout(mainLeft, mainTop, mainRight, mainBottom);
+        mainView.layout(flowLeft, flowTop, flowRight, flowBottom);
+    }
+
+
+    @OnClick(R.id.btn_close)
+    public void close() {
+        finish();
+    }
+
+    @OnClick(R.id.btn_mic)
+    public void switchMicrophone(ImageButton button) {
+
+        isMicOff = !isMicOff;
+        button.setImageResource(isMicOff ? R.mipmap.icon_mic_off : R.mipmap.icon_mic_on);
+    }
+
+    @OnClick(R.id.btn_sound)
+    public void switchSound(ImageButton button) {
+
+        isSoundOff = !isSoundOff;
+        button.setImageResource(isSoundOff ? R.mipmap.icon_sound_off : R.mipmap.icon_sound_on);
+    }
+
 }

@@ -7,20 +7,72 @@
     android:layout_height="match_parent"
     android:background="#000000">
 
-
-    <com.closeli.library.camera.render.CLResizeSurfaceView
-        android:id="@+id/mainview"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintDimensionRatio="H,16:9"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent">
-
-    </com.closeli.library.camera.render.CLResizeSurfaceView>
+    <RelativeLayout
+        android:id="@+id/mainLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        
+        <TextureView
+            android:id="@+id/localView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
 
+        <TextureView
+            android:id="@+id/remoteView"
+            android:layout_width="200dp"
+            android:layout_height="150dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"/>
+
+        <RelativeLayout
+            android:id="@+id/funcLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/btn_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@mipmap/icon_close"
+                android:background="@android:color/transparent"
+                android:layout_alignParentLeft="true"/>
+
+            <ImageButton
+                android:id="@+id/btn_sound"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@mipmap/icon_sound_on"
+                android:background="@android:color/transparent"
+                android:layout_toRightOf="@+id/btn_switch"/>
+
+
+            <ImageButton
+                android:id="@+id/btn_mic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@mipmap/icon_mic_on"
+                android:background="@android:color/transparent"
+                android:layout_toRightOf="@+id/btn_sound"/>
+
+
+            <ImageButton
+                android:id="@+id/btn_close"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@mipmap/icon_close"
+                android:background="@android:color/transparent"
+                android:layout_alignParentRight="true"/>
+
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
+
+
+    <!--app:layout_constraintDimensionRatio="H,4:3"-->
     <!--<ImageView-->
     <!--android:id="@+id/flowImage"-->
     <!--android:layout_width="180dp"-->

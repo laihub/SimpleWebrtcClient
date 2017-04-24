@@ -37,20 +37,13 @@ public class CLBIVideoDemoRemoteActivity extends CLBIVideoDemoActivity implement
     }
 
     @Override
-    protected void onReadData(PixelBuffer pixelBuffer, int width, int height) {
-        super.onReadData(pixelBuffer, width, height);
-
-        CLWebRtcNativeBinder.sendVideoData(pixelBuffer.buffer.array(), width, height);
-    }
-
-    @Override
-    protected void onDataReture(Buffer buffer, int width, int height) {
-        //重写，为了不直接渲染camera数据
+    protected void onReadData(byte[] data, int width, int height) {
+        CLWebRtcNativeBinder.sendVideoData(data, width, height);
     }
 
     @Override
     public void onVideoData(int peerId, byte[] pdata, int width, int height) {
-        mCameraRender.onDataReture(ByteBuffer.wrap(pdata), width, height);
+        mRemoteRender.fillData(pdata, false, width, height);
     }
 
     @Override
