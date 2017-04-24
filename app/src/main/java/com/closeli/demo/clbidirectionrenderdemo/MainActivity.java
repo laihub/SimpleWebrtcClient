@@ -136,7 +136,7 @@ public class MainActivity extends CLDIParentAcvitity implements CLWebRtcNativeBi
             public void run() {
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
                 dialogBuilder.setTitle("接收到 " + name +" : " + peerId + " 的邀请");
-                dialogBuilder.setMessage("是否要建立连接?");
+                dialogBuilder.setMessage("是否行视频通话?");
                 dialogBuilder.setCancelable(false);
                 dialogBuilder.setPositiveButton("是", new DialogInterface.OnClickListener() {
                     @Override
