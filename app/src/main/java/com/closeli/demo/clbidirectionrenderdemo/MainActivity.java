@@ -148,6 +148,9 @@ public class MainActivity extends CLDIParentAcvitity implements CLWebRtcNativeBi
                 dialogBuilder.setNegativeButton("否", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+
+                        //temp add
+                        CLWebRtcNativeBinder.disConnectToPeer(mInvitation.peerId);
                         mInvitation = null;
                     }
                 });
