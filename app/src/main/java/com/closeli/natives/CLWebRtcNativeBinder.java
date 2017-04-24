@@ -42,12 +42,13 @@ public class CLWebRtcNativeBinder {
 
     /**
      * 发送视频数据到当前连接的端id
-     * @param data      视频数据 RGBA 格式
+     * @param data      视频数据
      * @param width     视频 宽
      * @param height    视频 高
+     * @param convert_type 4 - rgba ; 13 - yuv420-NV21
      *
      */
-    public static native void sendVideoData(byte[] data, int width, int height, long timeStamp);
+    public static native void sendVideoData(byte[] data, int width, int height, long timeStamp, int convert_type);
 
 
     /**

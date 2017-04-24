@@ -50,8 +50,8 @@ public class MainActivity extends CLDIParentAcvitity implements CLWebRtcNativeBi
 
         needRequestPermission();
 
-//        CLWebRtcNativeBinder.setHallCallback(this);
-//        CLWebRtcNativeBinder.init(getApplicationContext());
+        CLWebRtcNativeBinder.setHallCallback(this);
+        CLWebRtcNativeBinder.init(getApplicationContext());
 
         mDataSource = new CLNetworkDataSource();
 
@@ -82,8 +82,8 @@ public class MainActivity extends CLDIParentAcvitity implements CLWebRtcNativeBi
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        CLWebRtcNativeBinder.stop();
-//        CLWebRtcNativeBinder.setHallCallback(null);
+        CLWebRtcNativeBinder.stop();
+        CLWebRtcNativeBinder.setHallCallback(null);
     }
 
     public void startVideo(int position) {

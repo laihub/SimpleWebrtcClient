@@ -41,7 +41,7 @@ public class CLBIVideoDemoRemoteActivity extends CLBIVideoDemoActivity implement
     @Override
     protected void onReadData(byte[] data, int width, int height) {
         final long captureTimeNs = TimeUnit.MILLISECONDS.toNanos(SystemClock.elapsedRealtime());
-        CLWebRtcNativeBinder.sendVideoData(data, width, height, captureTimeNs);
+        CLWebRtcNativeBinder.sendVideoData(data, width, height, captureTimeNs, 13);
     }
 
     @Override
