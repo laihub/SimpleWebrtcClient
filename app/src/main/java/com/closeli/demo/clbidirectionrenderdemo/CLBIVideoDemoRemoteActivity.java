@@ -47,6 +47,7 @@ public class CLBIVideoDemoRemoteActivity extends CLBIVideoDemoActivity implement
     @Override
     public void onVideoData(int peerId, byte[] pdata, int width, int height) {
         mRemoteRender.fillData(pdata, false, width, height);
+        rgbaImageTest(pdata, width, height);
     }
 
     @Override

@@ -4,14 +4,12 @@ import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.view.KeyEvent;
 import android.view.TextureView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
@@ -20,7 +18,6 @@ import com.closeli.library.camera.textureRender.CLSimpleRender;
 import com.closeli.library.camera.textureRender.CLTextureViewGLRenderCallback;
 import com.closeli.library.camera.tools.CLCameraManager;
 import com.closeli.library.camera.tools.CLLoger;
-import com.closeli.library.camera.tools.PixelBuffer;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -46,6 +43,15 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
     @BindView(R.id.funcLayout)
     RelativeLayout mFuncLayout;
 
+    @BindView(R.id.btn_mic)
+    ImageButton btnMic;
+    @BindView(R.id.btn_sound)
+    ImageButton btnSound;
+    @BindView(R.id.btn_switch)
+    ImageButton btnSwitch;
+    @BindView(R.id.btn_close)
+    ImageButton btnClose;
+
 
     CLCameraRender mCameraRender;
     CLSimpleRender mRemoteRender;
@@ -56,6 +62,9 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
     private boolean isMicOff = false;
     private boolean isSoundOff = false;
     private boolean isFlowOnTop = true;
+
+    //懒的判断是否有DPAD
+    private int mSelectedIndex = -1;
 
     @Override
     protected int contenViewLayout() {
@@ -140,7 +149,11 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
                         }
                     });
 
+
+                    int format = camera.getParameters().getPreviewFormat();
                     camera.setPreviewTexture(st);
+                    int degree = CLCameraManager.sharedCameraManager().adjustCameraDisplayOrientation();
+                    CLLoger.trace(TAG, "degree :  " + degree);
                     camera.startPreview();
                 }catch (Exception exp) {
 
@@ -171,33 +184,7 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
 //        CLWebRtcNativeBinder.convertI420ToRGBA(data, width, height,rgba);
 //
 //        mRemoteRender.fillData(rgba, false, width, height);
-    }
 
-
-
-    private void rgbaImageTest(PixelBuffer pixelBuffer, int width, int height) {
-        //Test Code
-//        ImageView mIV = (ImageView)findViewById(R.id.flowImage);
-//        byte[] bytes = pixelBuffer.buffer.array();
-//        final Bitmap rgbaImage = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-//        rgbaImage.copyPixelsFromBuffer(ByteBuffer.wrap(bytes));
-//        CLBIVideoDemoActivity.this.runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                mIV.setImageBitmap(rgbaImage);
-//            }
-//        });
-    }
-
-
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-
-//        if (KeyEvent.KEYCODE_DPAD_CENTER == keyCode) {
-//
-//        }
-        return super.onKeyDown(keyCode, event);
     }
 
 
@@ -240,14 +227,79 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
     public void switchMicrophone(ImageButton button) {
 
         isMicOff = !isMicOff;
-        button.setImageResource(isMicOff ? R.mipmap.icon_mic_off : R.mipmap.icon_mic_on);
+        button.setImageResource(isMicOff ? R.drawable.btn_mic_off : R.drawable.btn_mic_on);
     }
 
     @OnClick(R.id.btn_sound)
     public void switchSound(ImageButton button) {
 
         isSoundOff = !isSoundOff;
-        button.setImageResource(isSoundOff ? R.mipmap.icon_sound_off : R.mipmap.icon_sound_on);
+        button.setImageResource(isSoundOff ? R.drawable.btn_sound_off : R.drawable.btn_sound_on);
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        boolean result = super.onKeyDown(keyCode, event);
+        switch (keyCode) {
+
+            case KeyEvent.KEYCODE_DPAD_CENTER:
+                actions();
+                break;
+
+            case KeyEvent.KEYCODE_DPAD_UP:
+                mSelectedIndex--;
+                break;
+
+            case KeyEvent.KEYCODE_DPAD_DOWN:
+                mSelectedIndex++;
+                break;
+
+            default: return result;
+        }
+
+        if (mSelectedIndex < 0)
+            mSelectedIndex = 0;
+        if (mSelectedIndex > 4)
+            mSelectedIndex = 4;
+
+        selected();
+        return result;
+    }
+
+    private void actions() {
+
+        switch (mSelectedIndex) {
+            case 0: switchPage(); break;
+            case 1: switchMicrophone(btnMic); break;
+            case 2: switchSound(btnSound); break;
+            case 4: close(); break;
+        }
+    }
+
+    private void selected() {
+        switch (mSelectedIndex) {
+            case 0: btnSwitch.setSelected(true); break;
+            case 1: btnMic.setSelected(true); break;
+            case 2: btnSound.setSelected(true); break;
+            case 4: btnClose.setSelected(true); break;
+        }
+    }
+
+
+//    @BindView(R.id.flowImage)
+//    ImageView mIV;
+
+    protected void rgbaImageTest(byte[] bytes, int width, int height) {
+        //Test Code
+
+//        final Bitmap rgbaImage = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+//        rgbaImage.copyPixelsFromBuffer(ByteBuffer.wrap(bytes));
+//        CLBIVideoDemoActivity.this.runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                mIV.setImageBitmap(rgbaImage);
+//            }
+//        });
+    }
 }
