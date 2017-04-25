@@ -52,6 +52,10 @@ public class MainActivity extends CLDIParentAcvitity implements CLWebRtcNativeBi
 
         CLWebRtcNativeBinder.setHallCallback(this);
         CLWebRtcNativeBinder.init(getApplicationContext());
+        String serverip = "101.37.17.13";
+        String peername = "Closeli***";
+        int port  = 8888;
+        CLWebRtcNativeBinder.startLogin(serverip.getBytes(), serverip.length(), 8888, peername.getBytes(), peername.length());
 
         mDataSource = new CLNetworkDataSource();
 
