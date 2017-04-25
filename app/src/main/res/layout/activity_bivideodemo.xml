@@ -11,18 +11,26 @@
         android:id="@+id/mainLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        
+
         <TextureView
-            android:id="@+id/localView"
+            android:id="@+id/remoteMainView"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
         <TextureView
-            android:id="@+id/remoteView"
+            android:id="@+id/localView"
             android:layout_width="200dp"
             android:layout_height="150dp"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentRight="true" />
+
+        <TextureView
+            android:id="@+id/remoteFlowView"
+            android:layout_width="200dp"
+            android:layout_height="150dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:alpha="0"/>
 
     </RelativeLayout>
 

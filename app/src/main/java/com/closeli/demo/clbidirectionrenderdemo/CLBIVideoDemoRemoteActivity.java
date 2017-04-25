@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
+import com.closeli.library.camera.textureRender.CLSimpleRender;
 import com.closeli.library.camera.tools.PixelBuffer;
 import com.closeli.natives.CLWebRtcNativeBinder;
 import com.closeli.remoteTools.CLNetworkData;
@@ -41,12 +42,14 @@ public class CLBIVideoDemoRemoteActivity extends CLBIVideoDemoActivity implement
     @Override
     protected void onReadData(byte[] data, int width, int height) {
         final long captureTimeNs = TimeUnit.MILLISECONDS.toNanos(SystemClock.elapsedRealtime());
-        CLWebRtcNativeBinder.sendVideoData(data, width, height, captureTimeNs, 13, 180);
+        CLWebRtcNativeBinder.sendVideoData(data, width, height, captureTimeNs, 13, mCameraRotation);
     }
 
     @Override
     public void onVideoData(int peerId, byte[] pdata, int width, int height) {
-        mRemoteRender.fillData(pdata, false, width, height);
+
+        CLSimpleRender render = isCameraFlow ? mRemoteMainRender : mRemoteRender;
+        render.fillData(pdata, false, width, height);
         rgbaImageTest(pdata, width, height);
     }
 

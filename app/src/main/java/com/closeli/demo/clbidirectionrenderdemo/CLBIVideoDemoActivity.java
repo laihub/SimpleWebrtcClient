@@ -2,13 +2,13 @@ package com.closeli.demo.clbidirectionrenderdemo;
 
 import android.content.Context;
 import android.graphics.ImageFormat;
+import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.TextureView;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
@@ -35,7 +35,9 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
     @BindView(R.id.localView)
     TextureView mLocalView;
 
-    @BindView(R.id.remoteView)
+    @BindView(R.id.remoteMainView)
+    TextureView mRemoteMainView;
+    @BindView(R.id.remoteFlowView)
     TextureView mRemoteView;
 
     @BindView(R.id.mainLayout)
@@ -56,13 +58,15 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
 
     CLCameraRender mCameraRender;
     CLSimpleRender mRemoteRender;
+    CLSimpleRender mRemoteMainRender;
 
     private byte[] previewBuffer;
+    protected int mCameraRotation = 0;
 
 
     private boolean isMicOff = false;
     private boolean isSoundOff = false;
-    private boolean isFlowOnTop = true;
+    protected boolean isCameraFlow = true;
 
     @Override
     protected int contenViewLayout() {
@@ -149,11 +153,10 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
                         }
                     });
 
+                    Camera.CameraInfo info = CLCameraManager.sharedCameraManager().getCameraInfo();
+                    mCameraRotation = (info.orientation - 90 + 360) % 360;
 
-                    int format = camera.getParameters().getPreviewFormat();
                     camera.setPreviewTexture(st);
-                    int degree = CLCameraManager.sharedCameraManager().adjustCameraDisplayOrientation();
-                    CLLoger.trace(TAG, "degree :  " + degree);
                     camera.startPreview();
                 }catch (Exception exp) {
 
@@ -167,14 +170,13 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
     }
 
     private void setUpRemoteView() {
-        mRemoteRender = new CLSimpleRender(this, new CLTextureViewGLRenderCallback() {
-            @Override
-            public void onSurfaceTextureAvailable(SurfaceTexture st, int width, int height) {
-
-            }
-        });
+        mRemoteRender = new CLSimpleRender(this, null);
         mRemoteRender.start();
         mRemoteView.setSurfaceTextureListener(mRemoteRender);
+
+        mRemoteMainRender = new CLSimpleRender(this, null);
+        mRemoteMainRender.start();
+        mRemoteMainView.setSurfaceTextureListener(mRemoteMainRender);
     }
 
 
@@ -187,34 +189,32 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
 
     }
 
-
-
     @OnClick(R.id.btn_switch)
     public void switchPage() {
 
-        View flowView, mainView;
-        if (isFlowOnTop) {
-            flowView = mRemoteView;
-            mainView = mLocalView;
+        CLLoger.trace("CLTextureViewGLRender", "switchPage----");
+        int mainLeft = mRemoteMainView.getLeft();
+        int mainRight = mRemoteMainView.getRight();
+        int mainTop = mRemoteMainView.getTop();
+        int mainBottom = mRemoteMainView.getBottom();
+
+        int flowLeft = mRemoteView.getLeft();
+        int flowRight = mRemoteView.getRight();
+        int flowTop = mRemoteView.getTop();
+        int flowBottom = mRemoteView.getBottom();
+
+        if (isCameraFlow) {
+            mLocalView.layout(mainLeft, mainTop, mainRight, mainBottom);
+            mRemoteView.setAlpha(1);
         }
         else {
-            flowView = mLocalView;
-            mainView = mRemoteView;
+            mLocalView.layout(flowLeft, flowTop, flowRight, flowBottom);
+            mRemoteView.setAlpha(0);
         }
-        isFlowOnTop = false;
+        isCameraFlow = !isCameraFlow;
 
-        int mainLeft = mainView.getLeft();
-        int mainRight = mainView.getRight();
-        int mainTop = mainView.getTop();
-        int mainBottom = mainView.getBottom();
-
-        int flowLeft = flowView.getLeft();
-        int flowRight = flowView.getRight();
-        int flowTop = flowView.getTop();
-        int flowBottom = flowView.getBottom();
-
-        flowView.layout(mainLeft, mainTop, mainRight, mainBottom);
-        mainView.layout(flowLeft, flowTop, flowRight, flowBottom);
+        Rect rect = new Rect(mLocalView.getLeft(), mLocalView.getTop(), mLocalView.getRight(), mLocalView.getBottom());
+        CLLoger.trace("CLTextureViewGLRender", "local view frame: " + rect.toShortString());
     }
 
 
