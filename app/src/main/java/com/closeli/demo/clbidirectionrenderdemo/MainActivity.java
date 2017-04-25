@@ -12,6 +12,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.closeli.library.camera.tools.CLLoger;
 import com.closeli.natives.CLWebRtcNativeBinder;
@@ -22,10 +27,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 
 
 public class MainActivity extends CLDIParentAcvitity implements CLWebRtcNativeBinder.onHallCallback{
@@ -35,6 +42,13 @@ public class MainActivity extends CLDIParentAcvitity implements CLWebRtcNativeBi
     @BindView(R.id.recycles)
     RecyclerView mRecycleView;
 
+
+    @BindView(R.id.nameField)
+    EditText etName;
+    @BindView(R.id.loginBtn)
+    Button btnLogin;
+    @BindView(R.id.loginLayout)
+    LinearLayout mLoginLayout;
 
     private UsersAdapter mAdapter;
     private CLNetworkDataSource mDataSource;
@@ -52,11 +66,6 @@ public class MainActivity extends CLDIParentAcvitity implements CLWebRtcNativeBi
 
         CLWebRtcNativeBinder.setHallCallback(this);
         CLWebRtcNativeBinder.init(getApplicationContext());
-        String serverip = "101.37.17.13";
-        String peername = "Closeli***";
-        int port  = 8888;
-        CLWebRtcNativeBinder.startLogin(serverip.getBytes(), serverip.length(), 8888, peername.getBytes(), peername.length());
-
         mDataSource = new CLNetworkDataSource();
 
         mRecycleView.setLayoutManager(new LinearLayoutManager(this));
@@ -81,6 +90,8 @@ public class MainActivity extends CLDIParentAcvitity implements CLWebRtcNativeBi
                 return mDataSource.countOfItems();
             }
         });
+
+        etName.setText("VIP - " + System.currentTimeMillis());
     }
 
     @Override
@@ -197,6 +208,25 @@ public class MainActivity extends CLDIParentAcvitity implements CLWebRtcNativeBi
 
     }
 
+    @OnClick(R.id.loginBtn)
+    public void login() {
+
+        String name = etName.getText().toString();
+
+        if (null != name && name.length() > 0) {
+            String serverip = "101.37.17.13";
+            int port  = 8888;
+
+            byte[] ipBytes = serverip.getBytes(Charset.forName("UTF-8"));
+            byte[] nameBytes = name.getBytes(Charset.forName("UTF-8"));
+            CLWebRtcNativeBinder.startLogin(ipBytes, serverip.length(), port, nameBytes, nameBytes.length);
+            mLoginLayout.setVisibility(View.GONE);
+        }
+        else {
+            Toast.makeText(this, "无效名称", Toast.LENGTH_SHORT).show();
+
+        }
+    }
 
     private boolean needRequestPermission() {
         //Camera 权限提前判断！！！
