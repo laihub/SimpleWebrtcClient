@@ -52,6 +52,16 @@ public class CLWebRtcNativeBinder {
 
 
     /**
+     * 发送视频数据到当前连接的端id
+     * @param serverip     服务器IP
+     * @param port     端口号
+     * @param peername    用户名字
+     *
+     */
+    public static native void startLogin(byte[] serverip,int serveriplength,  int port, byte[] peername, int peernamelength);
+
+
+    /**
      * 视频数据回调
      * @param peerId    当前连接的端id
      * @param pdata     视频数据 RGBA 格式
