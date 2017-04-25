@@ -240,7 +240,7 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
         button.setImageResource(isSoundOff ? R.drawable.btn_sound_off : R.drawable.btn_sound_on);
 
         AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-        am.setStreamVolume(AudioManager.STREAM_MUSIC, isSoundOff ? 0 : 100, AudioManager.FLAG_PLAY_SOUND);
+        am.setStreamVolume(AudioManager.STREAM_VOICE_CALL, isSoundOff ? 0 : 100, AudioManager.FLAG_SHOW_UI);
     }
 
 
