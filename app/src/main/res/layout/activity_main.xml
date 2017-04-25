@@ -45,6 +45,7 @@
         android:layout_height="0dp"
         android:orientation="vertical"
         android:background="#FFFFFF"
+        android:clickable="true"
         app:layout_constraintTop_toBottomOf="@id/topFrame"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
