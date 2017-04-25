@@ -210,21 +210,13 @@ public class MainActivity extends CLDIParentAcvitity implements CLWebRtcNativeBi
 
     @OnClick(R.id.loginBtn)
     public void login() {
-
         String name = etName.getText().toString();
-
         if (null != name && name.length() > 0) {
-            String serverip = "101.37.17.13";
-            int port  = 8888;
-
-            byte[] ipBytes = serverip.getBytes(Charset.forName("UTF-8"));
-            byte[] nameBytes = name.getBytes(Charset.forName("UTF-8"));
-            CLWebRtcNativeBinder.startLogin(ipBytes, serverip.length(), port, nameBytes, nameBytes.length);
+            CLWebRtcNativeBinder.startLogin("101.37.17.13", 8888,name);
             mLoginLayout.setVisibility(View.GONE);
         }
         else {
             Toast.makeText(this, "无效名称", Toast.LENGTH_SHORT).show();
-
         }
     }
 

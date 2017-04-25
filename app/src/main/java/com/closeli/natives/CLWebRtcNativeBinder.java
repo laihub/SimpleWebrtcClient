@@ -58,7 +58,7 @@ public class CLWebRtcNativeBinder {
      * @param peername    用户名字
      *
      */
-    public static native void startLogin(byte[] serverip,int serveriplength,  int port, byte[] peername, int peernamelength);
+    public static native void startLogin(String serverip,int port, String peername);
 
 
     /**
