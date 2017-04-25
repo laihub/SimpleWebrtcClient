@@ -48,7 +48,7 @@ public class CLWebRtcNativeBinder {
      * @param convert_type 4 - rgba ; 13 - yuv420-NV21
      *
      */
-    public static native void sendVideoData(byte[] data, int width, int height, long timeStamp, int convert_type);
+    public static native void sendVideoData(byte[] data, int width, int height, long timeStamp, int convert_type, int rotation);
 
 
     /**
