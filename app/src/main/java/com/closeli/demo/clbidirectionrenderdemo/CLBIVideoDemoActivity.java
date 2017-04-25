@@ -1,11 +1,12 @@
 package com.closeli.demo.clbidirectionrenderdemo;
 
+import android.content.Context;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.KeyEvent;
 import android.view.TextureView;
 import android.view.View;
 import android.view.Window;
@@ -63,9 +64,6 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
     private boolean isSoundOff = false;
     private boolean isFlowOnTop = true;
 
-    //懒的判断是否有DPAD
-    private int mSelectedIndex = -1;
-
     @Override
     protected int contenViewLayout() {
 
@@ -80,6 +78,8 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
 
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
+        AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        am.setSpeakerphoneOn(true);
 
         setUpCamera();
         setUpLocalView();
@@ -228,6 +228,9 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
 
         isMicOff = !isMicOff;
         button.setImageResource(isMicOff ? R.drawable.btn_mic_off : R.drawable.btn_mic_on);
+
+        AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        am.setMicrophoneMute(isMicOff);
     }
 
     @OnClick(R.id.btn_sound)
@@ -235,55 +238,9 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
 
         isSoundOff = !isSoundOff;
         button.setImageResource(isSoundOff ? R.drawable.btn_sound_off : R.drawable.btn_sound_on);
-    }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-
-        boolean result = super.onKeyDown(keyCode, event);
-        switch (keyCode) {
-
-            case KeyEvent.KEYCODE_DPAD_CENTER:
-                actions();
-                break;
-
-            case KeyEvent.KEYCODE_DPAD_UP:
-                mSelectedIndex--;
-                break;
-
-            case KeyEvent.KEYCODE_DPAD_DOWN:
-                mSelectedIndex++;
-                break;
-
-            default: return result;
-        }
-
-        if (mSelectedIndex < 0)
-            mSelectedIndex = 0;
-        if (mSelectedIndex > 4)
-            mSelectedIndex = 4;
-
-        selected();
-        return result;
-    }
-
-    private void actions() {
-
-        switch (mSelectedIndex) {
-            case 0: switchPage(); break;
-            case 1: switchMicrophone(btnMic); break;
-            case 2: switchSound(btnSound); break;
-            case 4: close(); break;
-        }
-    }
-
-    private void selected() {
-        switch (mSelectedIndex) {
-            case 0: btnSwitch.setSelected(true); break;
-            case 1: btnMic.setSelected(true); break;
-            case 2: btnSound.setSelected(true); break;
-            case 4: btnClose.setSelected(true); break;
-        }
+        AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        am.setStreamVolume(AudioManager.STREAM_MUSIC, isSoundOff ? 0 : 100, AudioManager.FLAG_PLAY_SOUND);
     }
 
 

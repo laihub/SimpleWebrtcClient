@@ -37,6 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/btn_switch"
+            android:focusable="true"
             android:background="@android:color/transparent"
             android:layout_alignParentLeft="true"/>
 
@@ -45,6 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/btn_sound_on"
+            android:focusable="true"
             android:background="@android:color/transparent"
             android:layout_toRightOf="@+id/btn_switch"/>
 
@@ -54,6 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/btn_mic_on"
+            android:focusable="true"
             android:background="@android:color/transparent"
             android:layout_toRightOf="@+id/btn_sound"/>
 
@@ -64,6 +67,7 @@
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/btn_close"
             android:background="@android:color/transparent"
+            android:focusable="true"
             android:layout_alignParentRight="true"/>
 
 
