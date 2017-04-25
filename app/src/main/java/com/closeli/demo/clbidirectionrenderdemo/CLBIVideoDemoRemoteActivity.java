@@ -8,19 +8,16 @@ import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
 import com.closeli.library.camera.textureRender.CLSimpleRender;
-import com.closeli.library.camera.tools.PixelBuffer;
 import com.closeli.natives.CLWebRtcNativeBinder;
 import com.closeli.remoteTools.CLNetworkData;
 
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Created by piaovalentin on 2017/4/5.
  */
 
-public class CLBIVideoDemoRemoteActivity extends CLBIVideoDemoActivity implements CLWebRtcNativeBinder.onRoomCallback{
+public class CLBIVideoDemoRemoteActivity extends CLBIVideoDemoActivity implements CLWebRtcNativeBinder.onRoomCallback {
 
     private CLNetworkData mUser;
 
@@ -41,8 +38,9 @@ public class CLBIVideoDemoRemoteActivity extends CLBIVideoDemoActivity implement
 
     @Override
     protected void onReadData(byte[] data, int width, int height) {
-        final long captureTimeNs = TimeUnit.MILLISECONDS.toNanos(SystemClock.elapsedRealtime());
-        CLWebRtcNativeBinder.sendVideoData(data, width, height, captureTimeNs, 13, mCameraRotation);
+
+        long time = TimeUnit.MILLISECONDS.toNanos(SystemClock.elapsedRealtime());
+        CLWebRtcNativeBinder.sendVideoData(data, width, height, time, 13, mCameraRotation);
     }
 
     @Override
