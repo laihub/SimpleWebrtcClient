@@ -27,7 +27,19 @@ import butterknife.OnClick;
  * Created by piaovalentin on 2017/3/31.
  */
 
+
 public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
+
+
+    //phone
+    private static final int FUCKWidth = 640;
+    private static final int FUCKHeight = 360;
+    private static final int FUCKTreat = 0;
+
+    //fuck box
+//    private static final int FUCKWidth = 640;
+//    private static final int FUCKHeight = 480;
+//    private static final int FUCKTreat = 180;
 
     private final String TAG = getClass().getSimpleName();
 
@@ -120,8 +132,8 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
         try {
             CLCameraManager.init(this);
             CLCameraManager.sharedCameraManager().setSwapAble(true);
+            CLCameraManager.sharedCameraManager().setExpectedPreviewSize(FUCKWidth, FUCKHeight);
             CLCameraManager.sharedCameraManager().config(null);
-
         } catch (Exception e) {
             e.printStackTrace();
             CLLoger.trace(TAG, "init camera error!");
@@ -155,6 +167,9 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
 
                     Camera.CameraInfo info = CLCameraManager.sharedCameraManager().getCameraInfo();
                     mCameraRotation = (info.orientation - 90 + 360) % 360;
+
+                    if (0 != FUCKTreat)
+                        mCameraRotation = FUCKTreat;
 
                     camera.setPreviewTexture(st);
                     camera.startPreview();
