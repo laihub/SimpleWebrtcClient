@@ -53,10 +53,14 @@ public class CLBIVideoDemoRemoteActivity extends CLBIVideoDemoActivity implement
 
     @Override
     public void onDisconnect(int peerId, int code) {
-        Toast.makeText(this, "连接结束！", Toast.LENGTH_SHORT).show();
-        finish();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(CLBIVideoDemoRemoteActivity.this, "连接结束！", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
     }
-
 
     private void connect() {
         int ret = CLWebRtcNativeBinder.connectToPeer(mUser.peerId);
