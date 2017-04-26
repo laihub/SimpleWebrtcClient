@@ -1,6 +1,7 @@
 package com.closeli.demo.clbidirectionrenderdemo;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -90,7 +92,11 @@ public class MainActivity extends CLDIParentAcvitity implements CLWebRtcNativeBi
             }
         });
 
-        etName.setText("VIP - " + System.currentTimeMillis());
+        etName.setText("VIP:" + System.currentTimeMillis());
+        etName.setSelected(true);
+        etName.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
     }
 
     @Override
@@ -242,7 +248,11 @@ public class MainActivity extends CLDIParentAcvitity implements CLWebRtcNativeBi
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        mAdapter.notifySelectedIndexForDirection(keyCode);
+
+        if (View.GONE ==  mLoginLayout.getVisibility()) {
+            mAdapter.notifySelectedIndexForDirection(keyCode);
+        }
+
         return super.onKeyDown(keyCode, event);
     }
 }

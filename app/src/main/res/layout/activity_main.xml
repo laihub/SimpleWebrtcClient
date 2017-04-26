@@ -56,6 +56,8 @@
             android:id="@+id/nameField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:textAlignment="center"/>
 
 
@@ -64,9 +66,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="登陆"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:layout_marginTop="20dp"
             android:textColor="#FFFFFF"
-            android:background="@color/colorPrimaryDark"/>
+            android:background="@drawable/btn_login"/>
 
         </LinearLayout>
 
