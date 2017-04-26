@@ -93,10 +93,18 @@ public class MainActivity extends CLDIParentAcvitity implements CLWebRtcNativeBi
         });
 
         etName.setText("VIP:" + System.currentTimeMillis());
-        etName.setSelected(true);
-        etName.requestFocus();
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (View.GONE !=  mLoginLayout.getVisibility()) {
+            etName.setSelected(true);
+            etName.requestFocus();
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
+        }
     }
 
     @Override
