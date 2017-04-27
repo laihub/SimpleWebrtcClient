@@ -33,7 +33,7 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
 
     //phone
     private static final int FUCKWidth = 640;
-    private static final int FUCKHeight = 360;
+    private static final int FUCKHeight = 480;
     private static final int FUCKTreat = 0;
 
     //fuck box
