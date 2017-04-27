@@ -106,6 +106,8 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
     @Override
     protected void onResume() {
         super.onResume();
+        CLLoger.trace(TAG, "onResume");
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mCameraRender.onResume();
         mRemoteRender.onResume();
     }
@@ -113,6 +115,8 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
     @Override
     protected void onPause() {
         super.onPause();
+        CLLoger.trace(TAG, "onPause");
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         CLCameraManager.sharedCameraManager().closeCamera();
         mCameraRender.onPause();
