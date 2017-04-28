@@ -189,11 +189,16 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
     }
 
     private void setUpRemoteView() {
+
+        final int bufferSize = 10;
+
         mRemoteRender = new CLSimpleRender(this, null);
+        mRemoteRender.setBufferSize(bufferSize);
         mRemoteRender.start();
         mRemoteView.setSurfaceTextureListener(mRemoteRender);
 
         mRemoteMainRender = new CLSimpleRender(this, null);
+        mRemoteMainRender.setBufferSize(bufferSize);
         mRemoteMainRender.start();
         mRemoteMainView.setSurfaceTextureListener(mRemoteMainRender);
     }
