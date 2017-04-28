@@ -96,6 +96,7 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
     protected void onInit(@Nullable Bundle savedInstanceState) {
         AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
         am.setSpeakerphoneOn(true);
+        am.setMicrophoneMute(false);
 
         setUpCamera();
         setUpLocalView();
@@ -128,6 +129,10 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
         super.onDestroy();
         mCameraRender.halt();
         mRemoteRender.halt();
+
+        mRemoteView.setSurfaceTextureListener(null);
+        mRemoteMainView.setSurfaceTextureListener(null);
+        mLocalView.setSurfaceTextureListener(null);
     }
 
 
