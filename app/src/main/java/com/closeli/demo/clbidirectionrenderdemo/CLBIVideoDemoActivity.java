@@ -195,7 +195,7 @@ public class CLBIVideoDemoActivity extends CLDIParentAcvitity {
 
     private void setUpRemoteView() {
 
-        final int bufferSize = 10;
+        final int bufferSize = 2;
 
         mRemoteRender = new CLSimpleRender(this, null);
         mRemoteRender.setBufferSize(bufferSize);

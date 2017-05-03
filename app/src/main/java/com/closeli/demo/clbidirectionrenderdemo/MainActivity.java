@@ -63,6 +63,7 @@ public class MainActivity extends CLDIParentAcvitity implements CLWebRtcNativeBi
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
 
+        CLLoger.LOG_ENABLE = false;
         needRequestPermission();
 
         CLWebRtcNativeBinder.setHallCallback(this);

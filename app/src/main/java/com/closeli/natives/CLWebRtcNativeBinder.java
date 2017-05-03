@@ -92,9 +92,9 @@ public class CLWebRtcNativeBinder {
     private static void onUserList(byte[] userList) {
 
         //testing code
-        if (TRICK != roomPeerId) {
-            onRemoteDisConnect(roomPeerId);
-        }
+//        if (TRICK != roomPeerId) {
+//            onRemoteDisConnect(roomPeerId);
+//        }
 
         if (null != mHallCallback)
              mHallCallback.onUserList(userList);
@@ -108,6 +108,7 @@ public class CLWebRtcNativeBinder {
         if (null != mCallback) {
             mCallback.onDisconnect(peerId, 0);
         }
+
     }
 
 
